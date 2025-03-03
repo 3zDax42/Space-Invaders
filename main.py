@@ -5,7 +5,9 @@ Game_Screen = pygame.display.set_mode((800,800))
 Tick_Speed = pygame.time.Clock()
 Time = 0
 Playing_Game = True
-enemy1 = pygame.image.load('Pipe.png').convert_alpha()
+enemy1 = pygame.image.load('Invader One.png').convert_alpha()
+enemy2 = pygame.image.load('Invader Two.png').convert_alpha()
+enemy3 = pygame.image.load('Invader Three.png').convert_alpha()
 #------------------------------------------------------------------### Classes ###
 class Alien:
     def __init__(self, X_Pos, Y_Pos):
@@ -13,21 +15,43 @@ class Alien:
         self.Y_Pos = Y_Pos
         self.Living = True
         self.Direction = 1
-        self.Width
-        self.Height
+        self.Frame_num = 0
+        self.Width = 0
+        self.Height = 0
     def Move(self, Time):
         if Time % 800 == 0:
-            
+            self.Y_Pos += 100
             self.Direction *= -1
+            return 0
         if Time % 100==0:
             self.X_Pos += 50
+        return Time
     def Draw(self):
         pass
-
-# Armada = []
-# for i in range (2):
-#     for j in range(4):
-#         Armada.append(Alien(j*60+50, i*50+50))
+class Large_Alien(Alien):
+    def Draw(self, Time):
+        self.Width = 38
+        self.Height = 38
+        Game_Screen.blit(enemy1, (self.X_Pos, self.Y_Pos), (self.Width*self.Frame_num, self.Height, self.Width, self.Height))
+        if Time % 100 == 0:
+            self.Frame_num += 1
+class Mid_Alien(Alien):
+    def Draw(self, Time):
+        self.Width = 38
+        self.Height = 30
+        Game_Screen.blit(enemy2, (self.X_Pos, self.Y_Pos), (self.Width*self.Frame_num, self.Height, self.Width, self.Height))
+        if Time % 100 == 0:
+            self.Frame_num += 1
+class Small_Alien(Alien):
+    def Draw(self, Time):
+        self.Width = 24
+        self.Height = 24
+        Game_Screen.blit(enemy2, (self.X_Pos, self.Y_Pos), (self.Width*self.Frame_num, self.Height, self.Width, self.Height))
+        if Time % 100 == 0:
+            self.Frame_num += 1
+Armada = []
+for i in range (2):
+    Armada.append(Large_Alien(50, i*50+50))
 class Bullet:
     def __init__(self, X_Pos, Y_Pos):
         self.X_Pos = X_Pos+28
@@ -92,6 +116,8 @@ while Playing_Game:
         if event.type == pygame.QUIT:
             Playing_Game = False
         player.Input(pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP)
+    for i in range (len(Armada)):
+        Time = Armada[i].Move(Time)
     player.Physics()
     if player.Shoot == True:
         bullet.Living = True
@@ -100,6 +126,8 @@ while Playing_Game:
     Game_Screen.fill((0, 0, 0))
     if bullet.Living == True:
         bullet.Draw()
+    for i in range (len(Armada)):
+        Armada[i].Draw(Time)
     player.Draw()
     pygame.display.flip()
 
